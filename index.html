@@ -3,226 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Calculator</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Interactive Image Gallery</title>
+    <!-- Tailwind CSS CDN for responsive and utility classes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom styles for hover effects and transitions */
         body {
             font-family: "Inter", sans-serif;
-            display: flex;
-            flex-direction: column; /* Changed to column to stack title and calculator */
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f0f2f5;
         }
 
-        .calculator {
-            background-color: #334155;
-            padding: 15px; /* Reduced padding */
-            border-radius: 1rem;
-            box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.1),
-                        0 3px 5px -2px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 300px; /* Smaller width */
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            transform: scale(0.95);
-        }
-
-        .calculator-display {
-            width: 100%;
-            background-color: #1e293b;
-            color: #f8fafc;
-            font-size: 2rem; /* Smaller display font */
-            text-align: right;
-            padding: 12px 18px;
-            border-radius: 0.5rem;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        .calculator-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
-        .calculator-button {
-            background-color: #475569;
-            color: #f8fafc;
-            padding: 14px; /* Smaller buttons */
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 0.6rem;
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            box-shadow: 0 3px 4px -1px rgba(0, 0, 0, 0.1),
-                        0 2px 3px -1px rgba(0, 0, 0, 0.06);
         }
 
-        .calculator-button:hover {
-            background-color: #64748b;
-            transform: translateY(-1px);
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .calculator-button:active {
-            background-color: #334155;
-            transform: translateY(0);
-            box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.2);
+        .gallery-item img {
+            width: 100%;
+            height: 200px; /* Fixed height for thumbnails */
+            object-fit: cover; /* Ensures images cover the area without distortion */
+            border-radius: 0.75rem; /* Rounded corners for images */
+            transition: transform 0.3s ease-in-out;
         }
 
-        .calculator-button.operator {
-            background-color: #f97316;
+        .gallery-item:hover img {
+            transform: scale(1.05); /* Slight zoom on hover */
         }
 
-        .calculator-button.operator:hover {
-            background-color: #ea580c;
+        /* Lightbox specific styles */
+        #lightbox {
+            transition: opacity 0.3s ease-in-out;
         }
 
-        .calculator-button.clear {
-            background-color: #ef4444;
+        #lightbox.hidden {
+            opacity: 0;
+            pointer-events: none; /* Prevents interaction when hidden */
         }
 
-        .calculator-button.clear:hover {
-            background-color: #dc2626;
+        #lightbox-img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        .calculator-button.equals {
-            background-color: #22c55e;
-            grid-column: span 2;
+        #close-lightbox,
+        #prev-image,
+        #next-image {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
         }
 
-        .calculator-button.equals:hover {
-            background-color: #16a34a;
+        #close-lightbox:hover,
+        #prev-image:hover,
+        #next-image:hover {
+            transform: scale(1.1);
         }
 
-        @media (max-width: 480px) {
-            .calculator {
-                max-width: 90%;
-                transform: scale(0.9);
-            }
-            .calculator-display {
-                font-size: 1.6rem;
-            }
-            .calculator-button {
-                padding: 12px;
-                font-size: 1rem;
-            }
+        .filter-btn {
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        .filter-btn.active {
+            background-color: #2563eb; /* Blue 600 */
+            color: white;
         }
     </style>
 </head>
-<body>
-    <!-- Visible Title -->
-    <h1 class="text-slate-700 text-3xl font-bold mb-4 text-center">Simple Calculator</h1>
-    <div class="calculator">
-        <div class="calculator-display" id="display">0</div>
-        <div class="calculator-buttons">
-            <button class="calculator-button clear" data-value="C" style="grid-column: span 2;">C</button>
-            <button class="calculator-button" data-value="backspace">&#9003;</button>
-            <button class="calculator-button operator" data-value="/">&divide;</button>
-            <button class="calculator-button" data-value="7">7</button>
-            <button class="calculator-button" data-value="8">8</button>
-            <button class="calculator-button" data-value="9">9</button>
-            <button class="calculator-button operator" data-value="*">&times;</button>
-            <button class="calculator-button" data-value="4">4</button>
-            <button class="calculator-button" data-value="5">5</button>
-            <button class="calculator-button" data-value="6">6</button>
-            <button class="calculator-button operator" data-value="-">&minus;</button>
-            <button class="calculator-button" data-value="1">1</button>
-            <button class="calculator-button" data-value="2">2</button>
-            <button class="calculator-button" data-value="3">3</button>
-            <button class="calculator-button operator" data-value="+">&plus;</button>
-            <button class="calculator-button" data-value="0">0</button>
-            <button class="calculator-button" data-value=".">.</button>
-            <button class="calculator-button equals" data-value="=">&equals;</button>
+<body class="bg-gray-100 text-gray-800 antialiased p-4">
+
+    <div class="container mx-auto py-8">
+        <h1 class="text-5xl font-extrabold text-center mb-10 text-blue-700 leading-tight">
+            Captivating Moments 📸
+        </h1>
+
+        <!-- Category Filters -->
+        <div id="category-filters" class="flex flex-wrap justify-center gap-4 mb-10">
+            <button class="filter-btn px-8 py-3 rounded-full bg-blue-500 text-white font-semibold shadow-md hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 ease-in-out" data-category="all">All</button>
+            <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="nature">Nature</button>
+            <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="city">Cityscapes</button>
+            <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="abstract">Abstract Art</button>
+            <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="animals">Wild Life</button>
+        </div>
+
+        <!-- Image Grid -->
+        <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <!-- Images will be dynamically loaded here by JavaScript -->
         </div>
     </div>
 
+    <!-- Lightbox Overlay -->
+    <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 hidden opacity-0">
+        <button id="close-lightbox" class="absolute top-6 right-6 text-white text-5xl font-bold p-3 rounded-full bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition-all duration-200 ease-in-out">&times;</button>
+        <button id="prev-image" class="absolute left-6 text-white text-6xl font-bold p-4 rounded-full bg-gray-700 bg-opacity-60 hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-200 ease-in-out">&lt;</button>
+        <button id="next-image" class="absolute right-6 text-white text-6xl font-bold p-4 rounded-full bg-gray-700 bg-opacity-60 hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-200 ease-in-out">&gt;</button>
+        <img id="lightbox-img" src="" alt="Full size image" class="max-w-[90%] max-h-[90vh] object-contain rounded-lg shadow-2xl">
+    </div>
+
     <script>
-        const display = document.getElementById('display');
-        const buttons = document.querySelectorAll('.calculator-button');
-        let currentInput = '0';
-        let lastInputWasEquals = false;
+        const galleryGrid = document.getElementById('gallery-grid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeLightboxBtn = document.getElementById('close-lightbox');
+        const prevImageBtn = document.getElementById('prev-image');
+        const nextImageBtn = document.getElementById('next-image');
+        const filterButtons = document.querySelectorAll('.filter-btn');
 
-        function updateDisplay() {
-            display.textContent = currentInput;
+        let currentImageIndex = 0;
+        let filteredImages = []; // Stores images currently displayed after filtering
+
+        // Sample image data using picsum.photos for reliability
+        const images = [
+            { src: "https://picsum.photos/id/1018/600/400", alt: "Forest with sunlight", category: "nature" },
+            { src: "https://picsum.photos/id/1015/600/400", alt: "Mountain lake", category: "nature" },
+            { src: "https://picsum.photos/id/1016/600/400", alt: "Beach sunset", category: "nature" },
+            { src: "https://picsum.photos/id/1019/600/400", alt: "Waterfall", category: "nature" },
+            { src: "https://picsum.photos/id/1039/600/400", alt: "City street at night", category: "city" },
+            { src: "https://picsum.photos/id/1037/600/400", alt: "Modern building exterior", category: "city" },
+            { src: "https://picsum.photos/id/1045/600/400", alt: "Abstract light patterns", category: "abstract" },
+            { src: "https://picsum.photos/id/1047/600/400", alt: "Colorful abstract art", category: "abstract" },
+            { src: "https://picsum.photos/id/237/600/400", alt: "Cute puppy", category: "animals" },
+            { src: "https://picsum.photos/id/219/600/400", alt: "Majestic lion", category: "animals" },
+            { src: "https://picsum.photos/id/200/600/400", alt: "Elephant in the wild", category: "animals" }
+        ];
+
+        /**
+         * Renders images to the gallery grid based on the provided array.
+         * @param {Array} imagesToRender - The array of image objects to display.
+         */
+        function renderGallery(imagesToRender) {
+            galleryGrid.innerHTML = ''; // Clear existing images
+            imagesToRender.forEach((image, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'gallery-item bg-white p-2';
+                imgContainer.dataset.index = index; // Store original index for lightbox
+
+                const img = document.createElement('img');
+                img.src = image.src;
+                img.alt = image.alt;
+                img.loading = 'lazy'; // Lazy load images
+                // Add onerror to handle broken image links
+                img.onerror = function() {
+                    this.onerror=null; // Prevent infinite loop if fallback also fails
+                    this.src='https://placehold.co/600x400/CCCCCC/666666?text=Image+Load+Error'; // Fallback image
+                    this.alt='Image failed to load';
+                };
+
+                imgContainer.appendChild(img);
+                galleryGrid.appendChild(imgContainer);
+            });
         }
 
-        function handleButtonClick(event) {
-            const value = event.target.dataset.value;
+        /**
+         * Displays the lightbox with the specified image.
+         * @param {number} index - The index of the image to display in the filteredImages array.
+         */
+        function openLightbox(index) {
+            currentImageIndex = index;
+            showImage(currentImageIndex);
+            lightbox.classList.remove('hidden');
+            // Force reflow to ensure transition plays
+            void lightbox.offsetWidth;
+            lightbox.classList.add('opacity-100');
+        }
 
-            if (value === 'C') {
-                currentInput = '0';
-                lastInputWasEquals = false;
-            } else if (value === 'backspace') {
-                if (currentInput.length > 1 && currentInput !== 'Error') {
-                    currentInput = currentInput.slice(0, -1);
-                } else {
-                    currentInput = '0';
-                }
-                lastInputWasEquals = false;
-            } else if (value === '=') {
-                try {
-                    let expression = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
-                    expression = expression.replace(/([+\-*/.]{2,})/g, (match) => match[match.length - 1]);
-                    let result = eval(expression);
-                    if (result % 1 !== 0) result = parseFloat(result.toFixed(10));
-                    currentInput = result.toString();
-                    lastInputWasEquals = true;
-                } catch {
-                    currentInput = 'Error';
-                    lastInputWasEquals = true;
-                }
-            } else if (['+', '-', '*', '/'].includes(value)) {
-                lastInputWasEquals = false;
-                const lastChar = currentInput.slice(-1);
-                if (['+', '-', '*', '/', '.'].includes(lastChar)) {
-                    currentInput = currentInput.slice(0, -1) + value;
-                } else {
-                    currentInput += value;
-                }
-            } else if (value === '.') {
-                lastInputWasEquals = false;
-                const lastNumber = currentInput.split(/[\+\-\*\/]/).pop();
-                if (!lastNumber.includes('.')) currentInput += value;
+        /**
+         * Hides the lightbox.
+         */
+        function closeLightbox() {
+            lightbox.classList.remove('opacity-100');
+            lightbox.classList.add('hidden');
+        }
+
+        /**
+         * Updates the image displayed in the lightbox.
+         * @param {number} index - The index of the image in the filteredImages array.
+         */
+        function showImage(index) {
+            if (filteredImages.length === 0) return; // No images to show
+
+            currentImageIndex = (index + filteredImages.length) % filteredImages.length;
+            lightboxImg.src = filteredImages[currentImageIndex].src;
+            lightboxImg.alt = filteredImages[currentImageIndex].alt;
+            // Add onerror to lightbox image as well
+            lightboxImg.onerror = function() {
+                this.onerror=null;
+                this.src='https://placehold.co/900x600/CCCCCC/666666?text=Image+Load+Error';
+                this.alt='Image failed to load';
+            };
+        }
+
+        /**
+         * Navigates to the next image in the lightbox.
+         */
+        function nextImage() {
+            showImage(currentImageIndex + 1);
+        }
+
+        /**
+         * Navigates to the previous image in the lightbox.
+         */
+        function prevImage() {
+            showImage(currentImageIndex - 1);
+        }
+
+        /**
+         * Filters images based on the selected category and re-renders the gallery.
+         * @param {string} category - The category to filter by ('all' for no filter).
+         */
+        function filterImages(category) {
+            filterButtons.forEach(btn => btn.classList.remove('active', 'bg-blue-500', 'hover:bg-blue-600', 'active:bg-blue-700'));
+            filterButtons.forEach(btn => btn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400', 'active:bg-gray-500'));
+
+            const activeButton = document.querySelector(`.filter-btn[data-category="${category}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active', 'bg-blue-500', 'hover:bg-blue-600', 'active:bg-blue-700');
+                activeButton.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400', 'active:bg-gray-500');
+            }
+
+            if (category === 'all') {
+                filteredImages = [...images];
             } else {
-                if (currentInput === '0' || lastInputWasEquals) {
-                    currentInput = value;
-                    lastInputWasEquals = false;
-                } else {
-                    currentInput += value;
-                }
+                filteredImages = images.filter(image => image.category === category);
             }
-            updateDisplay();
+            renderGallery(filteredImages);
         }
 
-        buttons.forEach(button => button.addEventListener('click', handleButtonClick));
+        // --- Event Listeners ---
 
-        document.addEventListener('keydown', (event) => {
-            const key = event.key;
-            let mappedValue = '';
-            if (/[0-9]/.test(key)) mappedValue = key;
-            else if (['+', '-', '*', '/'].includes(key)) mappedValue = key;
-            else if (key === '.') mappedValue = '.';
-            else if (key === 'Enter') mappedValue = '=';
-            else if (key === 'Escape' || key.toLowerCase() === 'c') mappedValue = 'C';
-            else if (key === 'Backspace') {
-                if (currentInput.length > 1 && currentInput !== 'Error') currentInput = currentInput.slice(0, -1);
-                else currentInput = '0';
-                updateDisplay();
-                return;
-            }
-
-            if (mappedValue) {
-                const syntheticEvent = { target: { dataset: { value: mappedValue } } };
-                handleButtonClick(syntheticEvent);
+        // Open lightbox when an image in the gallery is clicked
+        galleryGrid.addEventListener('click', (event) => {
+            const galleryItem = event.target.closest('.gallery-item');
+            if (galleryItem) {
+                const originalIndex = parseInt(galleryItem.dataset.index);
+                // Find the index of this image in the currently filtered array
+                const indexInFiltered = filteredImages.findIndex(img => img.src === images[originalIndex].src);
+                if (indexInFiltered !== -1) {
+                    openLightbox(indexInFiltered);
+                }
             }
         });
 
-        updateDisplay();
+        // Close lightbox button
+        closeLightboxBtn.addEventListener('click', closeLightbox);
+
+        // Lightbox navigation buttons
+        prevImageBtn.addEventListener('click', prevImage);
+        nextImageBtn.addEventListener('click', nextImage);
+
+        // Keyboard navigation for lightbox
+        document.addEventListener('keydown', (event) => {
+            if (!lightbox.classList.contains('hidden')) { // Only active if lightbox is open
+                if (event.key === 'ArrowRight') {
+                    nextImage();
+                } else if (event.key === 'ArrowLeft') {
+                    prevImage();
+                } else if (event.key === 'Escape') {
+                    closeLightbox();
+                }
+            }
+        });
+
+        // Filter button click listeners
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterImages(button.dataset.category);
+            });
+        });
+
+        // Initial render: show all images and activate the "All" filter button
+        filterImages('all');
     </script>
 </body>
 </html>
