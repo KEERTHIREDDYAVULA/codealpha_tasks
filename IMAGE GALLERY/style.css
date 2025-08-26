@@ -1,0 +1,70 @@
+/* Custom styles for hover effects and transitions */
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.gallery-item {
+  overflow: hidden;
+  border-radius: 0.75rem; /* Rounded corners */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.gallery-item:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+/* Lightbox styles */
+#lightbox {
+  transition: opacity 0.3s ease-in-out;
+}
+
+#lightbox.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#lightbox-img {
+  max-width: 90%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+#close-lightbox,
+#prev-image,
+#next-image {
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#close-lightbox:hover,
+#prev-image:hover,
+#next-image:hover {
+  transform: scale(1.1);
+}
+
+.filter-btn {
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.filter-btn.active {
+  background-color: #2563eb; /* Blue 600 */
+  color: white;
+}
