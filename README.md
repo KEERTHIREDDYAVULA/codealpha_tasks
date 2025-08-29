@@ -11,5 +11,4 @@
 ## Task 3: Music Player
 - Built using **HTML, CSS, and JavaScript**
 - Features: Play, Pause, Next, Previous functionality
-- 
 
