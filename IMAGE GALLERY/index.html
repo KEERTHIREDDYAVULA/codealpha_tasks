@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Image Gallery</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased p-4">
+
+  <div class="container mx-auto py-8">
+    <h1 class="text-5xl font-extrabold text-center mb-10 text-blue-700 leading-tight">
+      Captivating Moments 📸
+    </h1>
+
+    <!-- Category Filters -->
+    <div id="category-filters" class="flex flex-wrap justify-center gap-4 mb-10">
+      <button class="filter-btn px-8 py-3 rounded-full bg-blue-500 text-white font-semibold shadow-md hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 ease-in-out" data-category="all">All</button>
+      <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="nature">Nature</button>
+      <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="city">Cityscapes</button>
+      <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="abstract">Abstract Art</button>
+      <button class="filter-btn px-8 py-3 rounded-full bg-gray-300 text-gray-800 font-semibold shadow-md hover:bg-gray-400 active:bg-gray-500 transition-all duration-200 ease-in-out" data-category="animals">Wild Life</button>
+    </div>
+
+    <!-- Image Grid -->
+    <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <!-- Images will be dynamically loaded by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Lightbox Overlay -->
+  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 hidden opacity-0">
+    <button id="close-lightbox" class="absolute top-6 right-6 text-white text-5xl font-bold p-3 rounded-full bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition-all duration-200 ease-in-out">&times;</button>
+    <button id="prev-image" class="absolute left-6 text-white text-6xl font-bold p-4 rounded-full bg-gray-700 bg-opacity-60 hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-200 ease-in-out">&lt;</button>
+    <button id="next-image" class="absolute right-6 text-white text-6xl font-bold p-4 rounded-full bg-gray-700 bg-opacity-60 hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-200 ease-in-out">&gt;</button>
+    <img id="lightbox-img" src="" alt="Full size image" class="max-w-[90%] max-h-[90vh] object-contain rounded-lg shadow-2xl">
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
